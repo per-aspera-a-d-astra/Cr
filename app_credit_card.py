@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+#import matplotlib.pyplot as plt
+#import seaborn as sns
 
 # Set page configuration
 st.set_page_config(page_title="Credit Risk Prediction Demo", page_icon="💰", layout="wide")
