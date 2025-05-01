@@ -30,13 +30,13 @@ def load_model_from_drive():
     try:
         st.info("Downloading model from Google Drive... This may take a moment.")
         response = requests.get(url)
-        
-        # Load model directly from memory
+        # Print first few bytes to see what's being returned
+        st.write(f"First 100 bytes of response: {response.content[:100]}")
         model = pickle.load(BytesIO(response.content))
         st.success("Model loaded successfully!")
         return model
     except Exception as e:
-        st.error(f"Error loading model: {e}")
+        st.error(f"Detailed error loading model: {str(e)}")
         st.stop()
 
 # Load the model
