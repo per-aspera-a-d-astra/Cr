@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-#import matplotlib.pyplot as plt
-#import seaborn as sns
+import random
 
 # Set page configuration
 st.set_page_config(page_title="Credit Risk Prediction Demo", page_icon="💰", layout="wide")
@@ -47,47 +46,74 @@ with tab1:
     predict_button = st.button('Predict Credit Risk')
     
     if predict_button:
-        # Instead of an actual prediction, show a demo result
-        import random
-        result = random.choice(['good', 'bad'])
-        prob = random.uniform(0.6, 0.9)
+        # Simulate prediction based on input values
+        # This is a simplified simulation based on some logical rules
+        risk_score = 0
         
-        if result == 'good':
-            st.success(f"Demo: This client is predicted to be a **GOOD** credit risk with {prob*100:.1f}% confidence.")
+        # Income affects risk (higher income = lower risk)
+        if income > 200000:
+            risk_score -= 30
+        elif income > 100000:
+            risk_score -= 15
+        
+        # Employment affects risk (longer employment = lower risk)
+        if days_employed < -5000:
+            risk_score -= 20
+        
+        # Car and property ownership affect risk
+        if own_car == 'Y':
+            risk_score -= 10
+        if own_realty == 'Y':
+            risk_score -= 15
+            
+        # Children affect risk
+        risk_score += children * 5
+        
+        # Final prediction
+        prediction = 'good' if risk_score < 0 else 'bad'
+        confidence = min(0.9, max(0.6, abs(risk_score) / 100))
+        
+        # Show prediction
+        st.subheader("Prediction Result")
+        
+        if prediction == 'good':
+            st.success(f"Demo: This client is predicted to be a **GOOD** credit risk with {confidence*100:.1f}% confidence.")
         else:
-            st.error(f"Demo: This client is predicted to be a **BAD** credit risk with {prob*100:.1f}% confidence.")
+            st.error(f"Demo: This client is predicted to be a **BAD** credit risk with {confidence*100:.1f}% confidence.")
         
-        # Show a demo chart
-        try:
-            fig, ax = plt.subplots()
-            data = {'good': prob if result == 'good' else 1-prob, 'bad': 1-prob if result == 'good' else prob}
-            ax = sns.barplot(x=list(data.keys()), y=list(data.values()))
-            for i, v in enumerate(data.values()):
-                ax.text(i, v + 0.01, f'{v:.1%}', ha='center')
-            ax.set_ylim(0, 1)
-            st.pyplot(fig)
-        except Exception as e:
-            st.warning(f"Could not display chart: {e}")
+        # Use streamlit's built-in chart
+        st.subheader("Prediction Probability")
+        probs = {
+            'Good': confidence if prediction == 'good' else 1-confidence, 
+            'Bad': 1-confidence if prediction == 'good' else confidence
+        }
+        
+        # Convert to DataFrame for better display
+        chart_data = pd.DataFrame({
+            'Category': ['Good', 'Bad'],
+            'Probability': [probs['Good'], probs['Bad']]
+        })
+        
+        st.bar_chart(chart_data.set_index('Category'))
 
 with tab2:
     st.header("Feature Importance")
     st.write("This chart shows simulated feature importance for credit risk prediction.")
     
-    try:
-        # Create a simulated feature importance chart
-        features = ['Income', 'Days Employed', 'Property Ownership', 
-                    'Car Ownership', 'Children', 'Occupation', 
-                    'Family Status', 'Gender']
-        importances = [0.28, 0.23, 0.15, 0.12, 0.10, 0.07, 0.03, 0.02]
-        
-        imp_df = pd.DataFrame({'Feature': features, 'Importance': importances})
-        imp_df = imp_df.sort_values('Importance', ascending=False)
-        
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(x='Importance', y='Feature', data=imp_df, ax=ax)
-        st.pyplot(fig)
-    except Exception as e:
-        st.warning(f"Could not display feature importance: {e}")
+    # Create a simulated feature importance chart using Streamlit
+    features = ['Income', 'Days Employed', 'Property Ownership', 
+                'Car Ownership', 'Children', 'Occupation', 
+                'Family Status', 'Gender']
+    importances = [0.28, 0.23, 0.15, 0.12, 0.10, 0.07, 0.03, 0.02]
+    
+    # Create DataFrame
+    imp_df = pd.DataFrame({
+        'Feature': features, 
+        'Importance': importances
+    }).sort_values('Importance', ascending=False)
+    
+    # Display using Streamlit's bar chart
+    st.bar_chart(imp_df.set_index('Feature'))
 
 with tab3:
     st.header("About This App")
