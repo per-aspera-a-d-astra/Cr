@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 # import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
+# import seaborn as sns
+# from sklearn.preprocessing import OneHotEncoder
+# from sklearn.compose import ColumnTransformer
+#from sklearn.pipeline import Pipeline
 import requests
 import os
 import pickle
