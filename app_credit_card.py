@@ -21,17 +21,30 @@ st.set_page_config(
 # Define function to download and load model from Google Drive
 @st.cache_resource
 def load_model_from_drive():
-    # Replace this with your Google Drive file ID
     file_id = "15MzIDygfeabBBjOBZDsXOs-d4F6vm1bA"
     
-    # Direct download link format for Google Drive
-    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    # Try a different download URL format that can handle large files
+    url = f"https://drive.google.com/uc?export=download&id={file_id}&confirm=t"
     
     try:
         st.info("Downloading model from Google Drive... This may take a moment.")
-        response = requests.get(url)
-        # Print first few bytes to see what's being returned
-        st.write(f"First 100 bytes of response: {response.content[:100]}")
+        session = requests.Session()
+        response = session.get(url, stream=True)
+        
+        # Check if we're getting the confirmation page
+        if 'Virus scan warning' in response.text:
+            st.warning("Handling Google Drive virus scan warning...")
+            # Find the confirmation token
+            for k, v in response.cookies.items():
+                if k.startswith('download_warning'):
+                    # Get the value of the token
+                    token = v
+                    # Use the token to get the file
+                    url = f"https://drive.google.com/uc?export=download&id={file_id}&confirm={token}"
+                    response = session.get(url, stream=True)
+                    break
+        
+        # Load the model
         model = pickle.load(BytesIO(response.content))
         st.success("Model loaded successfully!")
         return model
